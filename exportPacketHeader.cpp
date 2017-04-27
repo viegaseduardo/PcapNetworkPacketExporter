@@ -27,7 +27,7 @@
 #include <linux/types.h>
 #include <linux/icmp.h>
 
-
+ #define TH_CWR 0x80
 
 using namespace std;
 
@@ -56,6 +56,7 @@ struct PacketDTO {
     char tcp_psh;
     char tcp_ack;
     char tcp_urg;
+    char tcp_cwr;
 
     //icmp
     __u8 icmp_type;
@@ -147,12 +148,13 @@ int main(int argc, char** argv) {
                 packetDTO.tcp_psh = (tcp->th_flags & TH_PUSH) ? '1' : '0';
                 packetDTO.tcp_rst = (tcp->th_flags & TH_RST) ? '1' : '0';
                 packetDTO.tcp_urg = (tcp->th_flags & TH_URG) ? '1' : '0';
+                packetDTO.tcp_cwr = (tcp->th_flags & TH_CWR) ? '1' : '0';
 
 
             } else if (ip->ip_p == 17) {//if UDP
                 udp = (struct udphdr*) (packet + sizeof (struct ether_header) + sizeof (struct ip));
 
-                strcpy(packetDTO.ip_p, "TCP");
+                strcpy(packetDTO.ip_p, "UDP");
 
                 packetDTO.udp_dest = ntohs(udp->dest);
                 packetDTO.udp_source = ntohs(udp->source);
@@ -161,11 +163,13 @@ int main(int argc, char** argv) {
 
             } else if (ip->ip_p == 1) {
                 icmp = (struct icmphdr*) (packet + sizeof (struct ether_header) + sizeof (struct ip));
+                
+                strcpy(packetDTO.ip_p, "ICMP");
 
                 packetDTO.icmp_code = icmp->code;
                 packetDTO.icmp_type = icmp->type;
             }
-            
+            /*
             if(strcmp(packetDTO.ip_src,"192.168.0.114") == 0){
                 attack++;
             }else if(strcmp(packetDTO.ip_src,"192.168.0.112") != 0 &&
@@ -191,9 +195,10 @@ int main(int argc, char** argv) {
                 attack = 0;
                 normal = 0;
             }
+             */
             
 
-/*
+
             fprintf(fp,
                     "%lu;" //timestamp
                     "%s;" //ip_src
@@ -213,6 +218,7 @@ int main(int argc, char** argv) {
                     "%c;" //tcp_psh
                     "%c;" //tcp_ack
                     "%c;" //tcp_urg
+                    "%c;" //tcp_cwr
                     "%u;" //icmp_type
                     "%u;" //icmp_code
                     "%d\n", //packet_size
@@ -234,11 +240,12 @@ int main(int argc, char** argv) {
                     packetDTO.tcp_psh,
                     packetDTO.tcp_ack,
                     packetDTO.tcp_urg,
+                    packetDTO.tcp_cwr,
                     packetDTO.icmp_type,
                     packetDTO.icmp_code,
                     packetDTO.packet_size
                     );
-            */
+            
 
         }
     }
