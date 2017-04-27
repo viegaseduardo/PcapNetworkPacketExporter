@@ -173,7 +173,7 @@ int main(int argc, char** argv) {
             if(strcmp(packetDTO.ip_src,"192.168.0.114") == 0){
                 attack++;
             }else if(strcmp(packetDTO.ip_src,"192.168.0.112") != 0 &&
-                    strcmp(packetDTO.ip_src,"192.168.0.113") != 0 &&
+                    strcmp(packettDTO.ip_src,"192.168.0.113") != 0 &&
                     strcmp(packetDTO.ip_src,"192.168.0.115") != 0 &&
                     strcmp(packetDTO.ip_src,"192.168.0.116") != 0 &&
                     strcmp(packetDTO.ip_src,"192.168.0.117") != 0 &&
