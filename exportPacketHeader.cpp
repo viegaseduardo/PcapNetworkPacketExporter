@@ -27,7 +27,7 @@
 #include <linux/types.h>
 #include <linux/icmp.h>
 
- #define TH_CWR 0x80
+#define TH_CWR 0x80
 
 using namespace std;
 
@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
     struct tcphdr *tcp;
     struct udphdr *udp;
     struct icmphdr *icmp;
-    
+
     int normal = 0;
     int attack = 0;
     int window = 1000;
@@ -130,6 +130,23 @@ int main(int argc, char** argv) {
 
             packetDTO.ip_ttl = ip->ip_ttl;
             packetDTO.packet_size = header->len;
+
+            packetDTO.tcp_fin = '0';
+            packetDTO.tcp_syn = '0';
+            packetDTO.tcp_ack = '0';
+            packetDTO.tcp_psh = '0';
+            packetDTO.tcp_rst = '0';
+            packetDTO.tcp_urg = '0';
+            packetDTO.tcp_cwr = '0';
+            packetDTO.tcp_source = 0;
+            packetDTO.tcp_dest = 0;
+            packetDTO.tcp_seq = 0;
+            packetDTO.tcp_ack_seq = 0;
+            packetDTO.udp_dest = 0;
+            packetDTO.udp_source = 0;
+            packetDTO.udp_len = 0;
+            packetDTO.icmp_code = 0;
+            packetDTO.icmp_type = 0;
 
 
             if (ip->ip_p == 6) {//if TCP
@@ -163,42 +180,13 @@ int main(int argc, char** argv) {
 
             } else if (ip->ip_p == 1) {
                 icmp = (struct icmphdr*) (packet + sizeof (struct ether_header) + sizeof (struct ip));
-                
+
                 strcpy(packetDTO.ip_p, "ICMP");
 
                 packetDTO.icmp_code = icmp->code;
                 packetDTO.icmp_type = icmp->type;
             }
-            /*
-            if(strcmp(packetDTO.ip_src,"192.168.0.114") == 0){
-                attack++;
-            }else if(strcmp(packetDTO.ip_src,"192.168.0.112") != 0 &&
-                    strcmp(packettDTO.ip_src,"192.168.0.113") != 0 &&
-                    strcmp(packetDTO.ip_src,"192.168.0.115") != 0 &&
-                    strcmp(packetDTO.ip_src,"192.168.0.116") != 0 &&
-                    strcmp(packetDTO.ip_src,"192.168.0.117") != 0 &&
-                    strcmp(packetDTO.ip_src,"192.168.0.118") != 0 &&
-                    
-                    strcmp(packetDTO.ip_dst,"192.168.0.112") != 0 &&
-                    strcmp(packetDTO.ip_dst,"192.168.0.113") != 0 &&
-                    strcmp(packetDTO.ip_dst,"192.168.0.115") != 0 &&
-                    strcmp(packetDTO.ip_dst,"192.168.0.116") != 0 &&
-                    strcmp(packetDTO.ip_dst,"192.168.0.117") != 0&&
-                    strcmp(packetDTO.ip_dst,"192.168.0.118") != 0){
-                normal++;
-            }
             
-            if((attack + normal) % window == 0 &&
-                    (attack + normal) > 0){
-                
-                fprintf(fp, "%d;%d;\n", normal, attack);
-                attack = 0;
-                normal = 0;
-            }
-             */
-            
-
-
             fprintf(fp,
                     "%lu;" //timestamp
                     "%s;" //ip_src
@@ -245,7 +233,7 @@ int main(int argc, char** argv) {
                     packetDTO.icmp_code,
                     packetDTO.packet_size
                     );
-            
+
 
         }
     }
